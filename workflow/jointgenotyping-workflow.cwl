@@ -120,9 +120,6 @@ steps:
   - advanced_driver_options
   scatterMethod: dotproduct
   run: ../tools/sentieon_gvcftyper.cwl
-  hints:
-  - class: 'sbg:AWSInstanceType'
-    value: c5.9xlarge
   out:
   - id: output_vcf
 - id: sentieon_gvcftyper_merge
