@@ -11,8 +11,7 @@ $namespaces:
   sbg: https://sevenbridges.com
 hints:
 - class: 'sbg:maxNumberOfParallelInstances'
-  value: $(inputs.maxNumberOfParallelInstances)
-
+  value: 128
 inputs:
 - id: reference
   label: Reference
@@ -71,10 +70,6 @@ inputs:
   label: Output file name
   doc: The output VCF file name. Must end with ".vcf.gz".
   type: string?
-  sbg:exposed: true
-- id: maxNumberOfParallelInstances
-  type: int?
-  default: 16
   sbg:exposed: true
 
 outputs:
