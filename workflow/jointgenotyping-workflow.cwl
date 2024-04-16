@@ -11,7 +11,7 @@ $namespaces:
   sbg: https://sevenbridges.com
 hints:
 - class: 'sbg:maxNumberOfParallelInstances'
-  value: 6
+  value: $(inputs.maxNumberOfParallelInstances)
 
 inputs:
 - id: reference
@@ -59,7 +59,7 @@ inputs:
   label: Genotype model
   doc: |-
     Genotype model: coalescent or multinomial. 
-    While the coalescent mode is theoretically more accuracy for smaller cohorts, the multinomial mode is equally accurate with large cohorts and scales better with a very large numbers of samples.
+    While the coalescent mode is theoretically more accurate for smaller cohorts, the multinomial mode is equally accurate with large cohorts and scales better with a very large number of samples.
   type:
   - 'null'
   - name: genotype_model
@@ -71,6 +71,10 @@ inputs:
   label: Output file name
   doc: The output VCF file name. Must end with ".vcf.gz".
   type: string?
+  sbg:exposed: true
+- id: maxNumberOfParallelInstances
+  type: int?
+  default: 16
   sbg:exposed: true
 
 outputs:
