@@ -94,7 +94,10 @@ steps:
   out:
   - id: output
 - id: sentieon_gvcftyper_distributed 
-  label: Sentieon_GVCFtyper_Distributed 
+  label: Sentieon_GVCFtyper_Distributed
+  hints:
+  - class: 'sbg:AWSInstanceType'
+    value: c5.9xlarge
   in:
   - id: sentieon_license
     source: sentieon_license
