@@ -5,7 +5,7 @@ RUN test -n "$SENTIEON_VERSION"
 
 LABEL container.base.image="amazonlinux:2023" \
       software.version="${SENTIEON_VERSION}" \
-      software.website="https://www.sentieon.com/" \
+      software.website="https://www.sentieon.com/"
 
 # Install igzip
 RUN yum update -y \
@@ -66,7 +66,7 @@ COPY --from=builder /usr/local/bin/bedtools-2.30.0 /usr/local/bin/bedtools-2.30.
 ENV SENTIEON_INSTALL_DIR=/opt/sentieon/sentieon-genomics-${SENTIEON_VERSION}
 ENV PATH $SENTIEON_INSTALL_DIR/bin:$PATH
 # Install dependencies
-RUN yum update -y && yum install -y jemalloc python3
+RUN yum update -y && yum install -y jemalloc python3 parallel findutils 
 ENV LD_PRELOAD=/usr/lib64/libjemalloc.so.2
 # A default jemalloc configuration that should work well for most use-cases, see http://jemalloc.net/jemalloc.3.html
 ENV MALLOC_CONF=metadata_thp:auto,background_thread:true,dirty_decay_ms:30000,muzzy_decay_ms:30000

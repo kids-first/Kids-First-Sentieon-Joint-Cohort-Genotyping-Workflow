@@ -6,12 +6,15 @@ requirements:
 - class: ScatterFeatureRequirement
 - class: InlineJavascriptRequirement
 - class: StepInputExpressionRequirement
+- class: MultipleInputFeatureRequirement
 
 $namespaces:
   sbg: https://sevenbridges.com
+
 hints:
-- class: 'sbg:maxNumberOfParallelInstances'
+- class: sbg:maxNumberOfParallelInstances
   value: 128
+
 inputs:
 - id: reference
   label: Reference
@@ -23,8 +26,10 @@ inputs:
   - pattern: ^.dict
     required: false
   sbg:fileTypes: FA, FASTA
-- id: input_gvcfs_list
-  label: Input GVCFs
+- id: input_gvcf_list
+  label: Input GVCF
+  doc: |-
+     Supply the URLs of both the gVCFs and their index files
   type: File
 - id: dbSNP
   label: dbSNP VCF file
@@ -44,10 +49,11 @@ inputs:
   type: string?
 - id: AWS_SECRET_ACCESS_KEY
   type: string?
-- id: size_of_chunks
-  label: The size of each chunk (MB).
+- id: AWS_SESSION_TOKEN
+  type: string?
+- id: num_parts
+  label: Number of shards.
   type: int?
-  sbg:exposed: true
 - id: call_conf
   label: Call confidence level
   type: int?
@@ -70,7 +76,6 @@ inputs:
   label: Output file name
   doc: The output VCF file name. Must end with ".vcf.gz".
   type: string?
-  sbg:exposed: true
 
 outputs:
 - id: output_vcf
@@ -83,21 +88,54 @@ outputs:
   sbg:fileTypes: VCF.GZ
 
 steps:
-- id: generate_shards
-  label: generate_shards
-  in:
+- id: fai_cleanup
+  in: 
   - id: reference
     source: reference
-  - id: size_of_chunks
-    source: size_of_chunks
-  run: ../tools/generate_shards.cwl
   out:
-  - id: output
-- id: sentieon_gvcftyper_distributed 
-  label: Sentieon_GVCFtyper_Distributed
+  - id:  reference_fai
   hints:
   - class: 'sbg:AWSInstanceType'
-    value: c5.9xlarge
+    value: c4.large
+  run: 
+    cwlVersion: v1.2
+    class: CommandLineTool
+    requirements:
+      - class: InlineJavascriptRequirement
+    inputs:
+    - id: reference
+      type: File
+      secondaryFiles:
+      - {pattern: .fai, required: true}
+    outputs:
+    - id: reference_fai
+      type: File
+      outputBinding:
+        glob: '*.fai'
+    arguments:
+    - position: 1
+      shellQuote: false
+      valueFrom: |- 
+        head -n 25 $(inputs.reference.secondaryFiles[0].path) > $(inputs.reference.secondaryFiles[0].path.split('/').reverse()[0])
+- id: generate_shards
+  in:
+  - id: reference_index
+    source: fai_cleanup/reference_fai
+  - id: num_parts
+    source: num_parts
+  - id: input_gvcf_list
+    source: input_gvcf_list
+  run: ../tools/generate_shards.cwl
+  hints:
+  - class: 'sbg:AWSInstanceType'
+    value: c4.large
+  out:
+  - id: bcftools_cmd
+  - id: shard_interval
+- id: sentieon_gvcftyper_distributed 
+  hints:
+  - class: 'sbg:AWSInstanceType'
+    value: c5.12xlarge
   in:
   - id: sentieon_license
     source: sentieon_license
@@ -105,12 +143,14 @@ steps:
     source: AWS_ACCESS_KEY_ID
   - id: AWS_SECRET_ACCESS_KEY
     source: AWS_SECRET_ACCESS_KEY
+  - id: AWS_SESSION_TOKEN
+    source: AWS_SESSION_TOKEN
   - id: reference
     source: reference
-  - id: advanced_driver_options
-    source: generate_shards/output
-  - id: input_gvcfs_list
-    source: input_gvcfs_list
+  - id: bcftools_cmd_list
+    source: generate_shards/bcftools_cmd
+  - id: shard
+    source: generate_shards/shard_interval
   - id: dbSNP
     source: dbSNP
   - id: call_conf
@@ -120,11 +160,11 @@ steps:
   - id: genotype_model
     source: genotype_model
   scatter:
-  - advanced_driver_options
+  - bcftools_cmd_list
+  - shard
   scatterMethod: dotproduct
   run: ../tools/sentieon_gvcftyper.cwl
-  out:
-  - id: output_vcf
+  out: [output_vcf]
 - id: sentieon_gvcftyper_merge
   label: Sentieon_GVCFtyper_Merge
   in:
@@ -142,8 +182,6 @@ steps:
   - id: output_file_name
     source: output_file_name
     default: joint_final.vcf.gz
-  - id: cpu_per_job
-    default: 2
   run: ../tools/sentieon_gvcftyper.cwl
   out:
   - id: output_vcf
