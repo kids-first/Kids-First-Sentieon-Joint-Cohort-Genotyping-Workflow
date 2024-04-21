@@ -54,6 +54,8 @@ inputs:
 - id: num_parts
   label: Number of shards.
   type: int?
+- id: max_downloads
+  type: int?
 - id: call_conf
   label: Call confidence level
   type: int?
@@ -147,6 +149,8 @@ steps:
     source: AWS_SESSION_TOKEN
   - id: reference
     source: reference
+  - id: max_downloads
+    source: max_downloads
   - id: bcftools_cmd_list
     source: generate_shards/bcftools_cmd
   - id: shard
