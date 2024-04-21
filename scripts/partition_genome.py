@@ -80,7 +80,7 @@ def bcftoolscmd(gvcf_list, shards_padding_list):
         with open(f"bcftools_cmd_{name_idx[i]}.sh", 'w') as fout:
             sample_idx = 0
             for gvcf_url in gvcf_list:
-                fout.write(f"set -eo pipefail; (bcftools view --no-version -r {shards_padding_list[i]} {gvcf_url} || exit 255) | sentieon util vcfconvert - input_folder/sample-{sample_idx}.g.vcf.gz\n")
+                fout.write(f"set -eo pipefail; (bcftools view --no-version -r {shards_padding_list[i]} {gvcf_url} || echo -e '\\nerror\\n') | (sentieon util vcfconvert - input_folder/sample-{sample_idx}.g.vcf.gz || exit 255) \n")
                 sample_idx +=1
 
 

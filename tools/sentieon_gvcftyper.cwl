@@ -75,6 +75,10 @@ inputs:
     position: 300
     shellQuote: false
   sbg:fileTypes: VCF, VCF.GZ, GVCF, GVCF.GZ
+- id: max_downloads
+  doc: Limiting number of concurrent downloads.
+  type: int?
+  default: 20
 - id: bcftools_cmd_list
   type: File?
   doc: |-
@@ -83,7 +87,7 @@ inputs:
     position: 1
     shellQuote: false
     valueFrom: |-
-      set -eo pipefail; mkdir input_folder; parallel -P 20 --shuf --delay 1 --timeout 600 --retries 3 bash -c :::: $(self.path) || exit 1; find -type f -name 'sample-*.g.vcf.gz' | sort |
+      set -eo pipefail; mkdir input_folder; parallel -P $(inputs.max_downloads) --jl parallel.log --shuf --timeout 1200 --retries 5 bash -c :::: $(self.path) || exit 1; find -type f -name 'sample-*.g.vcf.gz' | sort |
 - id: reference
   label: Reference
   doc: Reference fasta file with associated indexes
