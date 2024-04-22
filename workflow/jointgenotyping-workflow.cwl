@@ -41,6 +41,16 @@ inputs:
     required: false
   - pattern: .idx
     required: false
+- id: gvcf_typer_cpus
+  label: GVCF Typer CPUs
+  type: 'int?'
+  doc: Num CPUs per gvcf typer job
+  default: 32
+- id: gvcf_typer_mem
+  label: GVCF Typer Mem (in GB)
+  type: 'int?'
+  doc: Amount of ram to use per gvcf typer job (in GB)
+  default: 32
 - id: sentieon_license
   label: Sentieon license
   doc: License server host and port
@@ -95,7 +105,7 @@ steps:
   - id: reference
     source: reference
   out:
-  - id:  reference_fai
+  - id: reference_fai
   hints:
   - class: 'sbg:AWSInstanceType'
     value: c4.large
@@ -141,6 +151,10 @@ steps:
   in:
   - id: sentieon_license
     source: sentieon_license
+  - id: cpu_per_job
+    source: gvcf_typer_cpus
+  - id: mem_per_job
+    source: gvcf_typer_mem
   - id: AWS_ACCESS_KEY_ID
     source: AWS_ACCESS_KEY_ID
   - id: AWS_SECRET_ACCESS_KEY
