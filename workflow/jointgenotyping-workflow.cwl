@@ -23,9 +23,11 @@ inputs:
   secondaryFiles:
   - pattern: .fai
     required: true
-  - pattern: ^.dict
-    required: false
   sbg:fileTypes: FA, FASTA
+- id: fai_subset
+  type: 'int?'
+  doc: "Number of lines from head of fai to keep"
+  default: 25
 - id: input_gvcf_list
   label: Input GVCF
   doc: |-
@@ -101,46 +103,23 @@ outputs:
 
 steps:
 - id: fai_cleanup
-  in: 
-  - id: reference
-    source: reference
-  out:
-  - id: reference_fai
-  hints:
-  - class: 'sbg:AWSInstanceType'
-    value: c4.large
-  run: 
-    cwlVersion: v1.2
-    class: CommandLineTool
-    requirements:
-      - class: InlineJavascriptRequirement
-    inputs:
-    - id: reference
-      type: File
-      secondaryFiles:
-      - {pattern: .fai, required: true}
-    outputs:
+  run: ../tools/fai_subset.cwl
+  in:
     - id: reference_fai
-      type: File
-      outputBinding:
-        glob: '*.fai'
-    arguments:
-    - position: 1
-      shellQuote: false
-      valueFrom: |- 
-        head -n 25 $(inputs.reference.secondaryFiles[0].path) > $(inputs.reference.secondaryFiles[0].path.split('/').reverse()[0])
+      source: reference
+      valueFrom: $(self.secondaryFiles[0])
+    - id: num_lines
+      source: fai_subset
+  out: [reference_fai_subset]
 - id: generate_shards
   in:
   - id: reference_index
-    source: fai_cleanup/reference_fai
+    source: fai_cleanup/reference_fai_subset
   - id: num_parts
     source: num_parts
   - id: input_gvcf_list
     source: input_gvcf_list
   run: ../tools/generate_shards.cwl
-  hints:
-  - class: 'sbg:AWSInstanceType'
-    value: c4.large
   out:
   - id: bcftools_cmd
   - id: shard_interval

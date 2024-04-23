@@ -75,8 +75,6 @@ inputs:
   secondaryFiles:
   - pattern: .fai
     required: true
-  - pattern: ^.dict
-    required: false
   inputBinding:
     prefix: -r
     position: 11
