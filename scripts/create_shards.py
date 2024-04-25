@@ -38,7 +38,7 @@ def determine_shards_from_fai(fai_file, num_parts, margin):
             with open(f"shard_interval_{name_idx[i]}.txt", 'w') as fout:
                 fout.write(",".join(shards_list[i]))
             for regions in shards_padding_list[i]:
-                print("{}\tscatter_{}".format(regions, i), file=bcf_out)
+                print("{}\tscatter_{}".format(regions, str(i).zfill(2)), file=bcf_out)
 
 
 if __name__ == '__main__':
