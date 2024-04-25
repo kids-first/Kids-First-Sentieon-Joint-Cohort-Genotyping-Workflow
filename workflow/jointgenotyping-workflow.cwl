@@ -124,9 +124,9 @@ steps:
   - id: bcftools_cmd
   - id: shard_interval
 - id: sentieon_gvcftyper_distributed 
-  hints:
-  - class: 'sbg:AWSInstanceType'
-    value: c5.12xlarge
+  # hints:
+  # - class: 'sbg:AWSInstanceType'
+  #   value: c5.12xlarge
   in:
   - id: sentieon_license
     source: sentieon_license
