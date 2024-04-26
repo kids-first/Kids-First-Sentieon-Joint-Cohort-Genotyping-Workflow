@@ -104,7 +104,7 @@ if __name__ == '__main__':
     if len(sys.argv) == 3:
         fai_file_path = sys.argv[1]
         gvcf_url_file = sys.argv[2]
-        chr_list = split_by_chr_from_fai(fai_file_path, number_of_parts, margin)
+        chr_list = split_by_chr_from_fai(fai_file_path)
         gvcf_list = urlproc(gvcf_url_file)
         bcftoolscmd(gvcf_list, chr_list)
     elif len(sys.argv) == 5:
