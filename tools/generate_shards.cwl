@@ -52,7 +52,3 @@ outputs:
 baseCommand:
 - python
 - partition_genome.py
-arguments:
-- position: 3
-  valueFrom: "200"
-
