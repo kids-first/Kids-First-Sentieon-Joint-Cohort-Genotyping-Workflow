@@ -44,7 +44,7 @@ inputs:
     position: 1
     shellQuote: false
     valueFrom: |-
-      ". " + $(self.path) + ";"
+      . $(self.path) ;
 - id: AWS_ACCESS_KEY_ID
   type: string?
 - id: AWS_SECRET_ACCESS_KEY
