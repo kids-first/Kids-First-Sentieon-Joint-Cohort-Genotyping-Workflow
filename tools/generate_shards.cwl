@@ -28,10 +28,11 @@ inputs:
 - id: num_parts
   label: Number of shards.
   type: int?
-  default: 60
   inputBinding:
     position: 2
     shellQuote: true
+    valueFrom:
+      $(self) 200
 - id: input_gvcf_list
   type: File
   inputBinding:
@@ -54,4 +55,4 @@ baseCommand:
 arguments:
 - position: 3
   valueFrom: "200"
-  shellQuote: false
+
