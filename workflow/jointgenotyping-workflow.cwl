@@ -57,15 +57,15 @@ inputs:
   label: Sentieon license
   doc: License server host and port
   type: string
-- id: aws_creds_export
-  type: File?
-  doc: "File with AWS credentials to source instead of string args"
 - id: AWS_ACCESS_KEY_ID
   type: string?
 - id: AWS_SECRET_ACCESS_KEY
   type: string?
 - id: AWS_SESSION_TOKEN
   type: string?
+- id: aws_creds_export
+  type: File?
+  doc: "File with AWS credentials to source instead of string args"
 - id: num_parts
   label: Number of shards.
   type: int?
@@ -145,6 +145,8 @@ steps:
     source: AWS_SECRET_ACCESS_KEY
   - id: AWS_SESSION_TOKEN
     source: AWS_SESSION_TOKEN
+  - id: aws_creds_export
+    source: aws_creds_export
   - id: reference
     source: reference
   - id: max_downloads

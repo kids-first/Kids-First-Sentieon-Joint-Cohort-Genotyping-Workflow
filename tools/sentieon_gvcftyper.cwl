@@ -37,15 +37,15 @@ inputs:
   label: Sentieon license
   doc: License server host and port
   type: string
+- id: aws_creds_export
+  type: File?
+  doc: "File with AWS credentials to source"
 - id: AWS_ACCESS_KEY_ID
   type: string?
 - id: AWS_SECRET_ACCESS_KEY
   type: string?
 - id: AWS_SESSION_TOKEN
   type: string?
-- id: aws_creds_export
-  type: File?
-  doc: "File with AWS credentials to source"
 - id: input_gvcf_files
   label: Input GVCFs
   type: File[]?
@@ -70,7 +70,7 @@ inputs:
     position: 1
     shellQuote: false
     valueFrom: |-
-      set -eo pipefail; $(inputs.aws_creds_export != null ? ". " + inputs.aws_creds_export.path + ";" : "") mkdir input_folder; parallel -P $(inputs.max_downloads) --jl parallel.log --shuf --timeout 1200 --retries 5 bash -c :::: $(self.path) || exit 1; find -type f -name 'sample-*.g.vcf.gz' | sort |
+      set -eo pipefail; $(inputs.aws_creds_export != null ? (". " + inputs.aws_creds_export.path + ";") : "") mkdir input_folder; parallel -P $(inputs.max_downloads) --jl parallel.log --shuf --timeout 1200 --retries 5 bash -c :::: $(self.path) || exit 1; find -type f -name 'sample-*.g.vcf.gz' | sort |
 - id: reference
   label: Reference
   doc: Reference fasta file with associated indexes
