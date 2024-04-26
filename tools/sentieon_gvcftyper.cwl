@@ -57,7 +57,7 @@ inputs:
   inputBinding:
     position: 300
     shellQuote: false
-  sbg:fileTypes: VCF, VCF.GZ, GVCF, GVCF.GZ
+  sbg:fileTypes: VCF, VCF.GZ, GVCF, GVCF.GZ, TXT
 - id: max_downloads
   doc: Limiting number of concurrent downloads.
   type: int?
