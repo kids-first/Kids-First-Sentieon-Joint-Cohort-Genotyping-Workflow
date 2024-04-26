@@ -57,9 +57,6 @@ inputs:
   label: Sentieon license
   doc: License server host and port
   type: string
-- id: aws_creds_export
-  type: File?
-  doc: "File with AWS credentials to source instead of string args"
 - id: AWS_ACCESS_KEY_ID
   type: string?
 - id: AWS_SECRET_ACCESS_KEY
@@ -137,8 +134,6 @@ steps:
     source: gvcf_typer_cpus
   - id: mem_per_job
     source: gvcf_typer_mem
-  - id: aws_creds_export
-    source: aws_creds_export
   - id: AWS_ACCESS_KEY_ID
     source: AWS_ACCESS_KEY_ID
   - id: AWS_SECRET_ACCESS_KEY
