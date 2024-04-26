@@ -43,7 +43,7 @@ def determine_shards_from_fai(fai_file, num_parts, margin):
     return output
 
 
-def split_by_chr_from_fai(fai_file, num_parts, margin):
+def split_by_chr_from_fai(fai_file):
     with open(fai_file, 'r') as file:
         chromosomes = file.readlines()
     output = []
