@@ -12,9 +12,9 @@ inputs:
   fai_subset: { type: 'int?', doc: "Number of lines from head of fai to keep", default: 24 }
   num_shards: { type: 'int?', doc: "Nunber of shards to make", default: 20 }
   input_vcf: { type: 'File[]', doc: "VCF files to process", secondaryFiles: ['.tbi']}
-  bcftools_cpu: { type: 'int?', default: 2}
+  bcftools_cpu: { type: 'int?', default: 3 }
   gvcf_typer_cpus: { label: GVCF Typer CPUs, type: 'int?', doc: "Num CPUs per gvcf typer job", default: 48 }
-  gvcf_typer_mem: { label: GVCF Typer Mem (in GB), type: 'int?', doc: "Amount of ram to use per gvcf typer job (in GB)", default: 32 }
+  gvcf_typer_mem: { label: GVCF Typer Mem (in GB), type: 'int?', doc: "Amount of ram to use per gvcf typer job (in GB)", default: 48 }
   sentieon_license: { label: Sentieon license, doc: "License server host and port", type: string }
   dbSNP: {type: 'File?', doc: "dbSNP file to annotate with"}
   call_conf: { label: Call confidence level, type: 'int?' }
@@ -114,4 +114,4 @@ $namespaces:
   sbg: https://sevenbridges.com
 hints:
 - class: sbg:maxNumberOfParallelInstances
-  value: 10
+  value: 128
