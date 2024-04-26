@@ -71,6 +71,7 @@ inputs:
     shellQuote: false
     valueFrom: |-
       set -eo pipefail; $(inputs.aws_creds_export != null ? (". " + inputs.aws_creds_export.path + ";") : "") mkdir input_folder; parallel -P $(inputs.max_downloads) --jl parallel.log --shuf --timeout 1200 --retries 5 bash -c :::: $(self.path) || exit 1; find -type f -name 'sample-*.g.vcf.gz' | sort |
+
 - id: reference
   label: Reference
   doc: Reference fasta file with associated indexes
