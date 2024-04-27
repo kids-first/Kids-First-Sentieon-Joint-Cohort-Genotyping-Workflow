@@ -10,7 +10,7 @@ requirements:
 inputs:
   reference: { type: File, doc: "Reference fasta with associated fai index", secondaryFiles: ['.fai'], "sbg:fileTypes": "FA, FASTA"}
   fai_subset: { type: 'int?', doc: "Number of lines from head of fai to keep", default: 24 }
-  num_shards: { type: 'int?', doc: "Nunber of shards to make", default: 20 }
+  num_shards: { type: 'int?', doc: "Nunber of shards to make" }
   split_by_chr: { type: 'boolean?', doc: "Split by chr instead", default: false }
   input_vcf: { type: 'File[]', doc: "VCF files to process", secondaryFiles: ['.tbi']}
   bcftools_cpu: { type: 'int?', default: 3 }
@@ -26,7 +26,8 @@ inputs:
   advanced_algo_options: { type: 'string?', default: "--merge" }
   output_file_name: {label: Output file name, doc: "The output VCF file name. Must end with .vcf.gz.", type: 'string?' , default: joint_final.vcf.gz }
 outputs:
-  joint_called_vcf: { type: File, secondaryFiles: ['.tbi'], outputSource: sentieon_gvcftyper_merge/output_vcf }
+  joint_called_vcf: { type: 'File?', secondaryFiles: ['.tbi'], outputSource: sentieon_gvcftyper_merge/output_vcf }
+  joint_called_by_chr_vcf: { type: 'File[]?', secondaryFiles: ['.tbi'], outputSource: sentieon_gvcftyper_distributed/output_vcf }
 
 steps:
   subset_fai:
@@ -36,7 +37,7 @@ steps:
         source: reference
         valueFrom: $(self.secondaryFiles[0])
       num_lines: fai_subset
-    out: [reference_fai_subset]
+    out: [reference_fai_subset, chr_alpha_sort]
   generate_shards:
     when: $(inputs.num_shards != null)
     run: ../tools/shard_fai.cwl
@@ -68,7 +69,7 @@ steps:
       threads: bcftools_cpu
       sentieon_license: sentieon_license
     scatter: [input_vcf]
-    out: [sharded_vcfs]
+    out: [split_vcfs]
 
   get_scatter_index:
     run:
@@ -89,7 +90,7 @@ steps:
     in:
       len_scatter:
         source: [split_by_chr, fai_subset, generate_shards/shard_interval]
-        valueFrom: $(self[0] ? self[1] : self[2].length)
+        valueFrom: "$(self[0] ? self[1] : self[2].length)"
     out: [out_array]
 
   sentieon_gvcftyper_distributed: 
@@ -101,12 +102,12 @@ steps:
       mem_per_job: gvcf_typer_mem
       reference: reference
       input_gvcf_files:
-        source: bcftools_shard_vcf/sharded_vcfs
+        source: split_vcf_by_chr/split_vcfs
         valueFrom: |
           $(self.map(function(e) { return e[inputs.scatter_index] }))
-      shard:
-        source: generate_shards/shard_interval
-        valueFrom: $(self[inputs.scatter_index])
+      # shard:
+      #   source: generate_shards/shard_interval
+      #   valueFrom: $(self[inputs.scatter_index])
       dbSNP: dbSNP
       call_conf: call_conf
       emit_conf: emit_conf
@@ -116,6 +117,7 @@ steps:
     out: [output_vcf]
 
   sentieon_gvcftyper_merge:
+    when: $(inputs.split_by_chr == null)
     run: ../tools/sentieon_gvcftyper.cwl
     label: Sentieon_GVCFtyper_Merge
     in:

@@ -25,7 +25,7 @@ arguments:
 
 inputs:
   reference_index: { type: File, doc: "fasta index file to shard", inputBinding: { position: 0 }, "sbg:fileTypes": FAI }
-  num_shards: { type: 'int?', inputBinding: {position: 2}, default: 60}
+  num_shards: { type: 'int?', inputBinding: {position: 2} }
 outputs:
   shard_interval: { type: 'File[]', outputBinding: { glob: shard_interval_*.txt } }
   bcftools_padded_scatter: { type: File, outputBinding: { glob: bcftools_padded_scatter.tsv } }

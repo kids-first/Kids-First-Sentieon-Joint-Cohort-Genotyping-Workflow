@@ -17,12 +17,16 @@ arguments:
   - position: 1
     shellQuote: false
     valueFrom: >-
-      > subset_$(inputs.reference_fai.basename)
+      > subset_$(inputs.reference_fai.basename) && cut -f 1 subset_$(inputs.reference_fai.basename) | sort > chr_alpha_sort.txt
 inputs:
   reference_fai: { type: File, doc: "Fasta reference index file to subset", inputBinding: {position: 0 } }
-  num_lines: { type: 'int?', doc: "Num lines from beginning to subset index on", default: 25, inputBinding: { position: 0, prefix: "-n"} }
+  num_lines: { type: 'int?', doc: "Num lines from beginning to subset index on", default: 22, inputBinding: { position: 0, prefix: "-n"} }
 outputs:
   reference_fai_subset:
     type: File
     outputBinding:
       glob: subset_$(inputs.reference_fai.basename)
+  chr_alpha_sort:
+    type: File
+    outputBinding:
+      glob: "chr_alpha_sort.txt"
