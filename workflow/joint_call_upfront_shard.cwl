@@ -17,7 +17,7 @@ inputs:
   gvcf_typer_cpus: { label: GVCF Typer CPUs, type: 'int?', doc: "Num CPUs per gvcf typer job", default: 48 }
   gvcf_typer_mem: { label: GVCF Typer Mem (in GB), type: 'int?', doc: "Amount of ram to use per gvcf typer job (in GB)", default: 48 }
   sentieon_license: { label: Sentieon license, doc: "License server host and port", type: string }
-  dbSNP: {type: 'File?', doc: "dbSNP file to annotate with"}
+  dbSNP: {type: 'File?', secondaryFiles: ['.tbi'], doc: "dbSNP file to annotate with"}
   call_conf: { label: Call confidence level, type: 'int?' }
   emit_conf: { label: Emit confidence level, type: 'int?' }
   genotype_model: { label: Genotype model, doc: "Genotype model: coalescent or multinomial. While the coalescent mode is theoretically more accurate for smaller cohorts, the multinomial mode is equally accurate with large cohorts and scales better with a very large number of samples.",
