@@ -20,7 +20,7 @@ requirements:
 inputs:
 - id: reference_index
   label: Reference FAI index
-  type: File
+  type: File?
   inputBinding:
     position: 1
     shellQuote: true
@@ -33,6 +33,11 @@ inputs:
     shellQuote: true
     valueFrom:
       $(self) 200
+- id: shard_list
+  label: The list of predetermined shards
+  type: File?
+  inputBinding:
+    position: 2
 - id: input_gvcf_list
   type: File
   inputBinding:

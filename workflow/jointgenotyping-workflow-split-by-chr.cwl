@@ -24,10 +24,9 @@ inputs:
   - pattern: .fai
     required: true
   sbg:fileTypes: FA, FASTA
-- id: fai_subset
-  type: 'int?'
-  doc: "Number of lines from head of fai to keep"
-  default: 25
+- id: shard_list
+  type: File
+  doc: The list of shards. Comma-separated like this "chr21,chr22"
 - id: input_gvcf_list
   label: Input GVCF
   doc: |-
@@ -87,10 +86,8 @@ inputs:
     - coalescent
     - multinomial
 - id: output_file_name_prefix
-  label: Output file name
-  doc: The prefix of output VCF file name
-  type: string?
-  default: joint-call
+  type: string
+  label: The prefix of output file names
 
 outputs:
 - id: output_vcf
@@ -103,19 +100,10 @@ outputs:
   sbg:fileTypes: VCF.GZ
 
 steps:
-- id: fai_cleanup
-  run: ../tools/fai_subset.cwl
-  in:
-    - id: reference_fai
-      source: reference
-      valueFrom: $(self.secondaryFiles[0])
-    - id: num_lines
-      source: fai_subset
-  out: [reference_fai_subset]
 - id: generate_shards
   in:
-  - id: reference_index
-    source: fai_cleanup/reference_fai_subset
+  - id: shard_list
+    source: shard_list
   - id: input_gvcf_list
     source: input_gvcf_list
   run: ../tools/generate_shards.cwl
@@ -149,6 +137,7 @@ steps:
     source: generate_shards/bcftools_cmd
   - id: interval
     source: generate_shards/shard_interval
+    loadContents: true
   - id: dbSNP
     source: dbSNP
   - id: call_conf
@@ -160,7 +149,11 @@ steps:
   - id: output_file_name
     source: output_file_name_prefix
     valueFrom: |-
-      $(self)-$(inputs.interval.contents).vcf.gz
+      ${
+          var chrname = inputs.interval.contents;
+          var newchrname = chrname.replace(",", "-");
+          return self + "-" + newchrname + ".vcf.gz"
+      }
   scatter:
   - bcftools_cmd_list
   - interval

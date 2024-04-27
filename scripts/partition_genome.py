@@ -43,19 +43,18 @@ def determine_shards_from_fai(fai_file, num_parts, margin):
     return output
 
 
-def split_by_chr_from_fai(fai_file):
-    with open(fai_file, 'r') as file:
+def split_by_predetermined_list(shard_list):
+    with open(shard_list, 'r') as file:
         chromosomes = file.readlines()
     output = []
     i = 0
     for line in chromosomes:
-        parts = line.strip().split('\t')
-        chromosome_name = parts[0]
+        chromosome_name = line.strip()
         output.append(chromosome_name)
     name_idx = [str(i).zfill(len(str(len(output)))) for i in range(len(output))]
     for i in range(len(output)):
         with open(f"shard_interval_{name_idx[i]}.txt", 'w') as fout:
-            fout.write(chromosome_name)
+            fout.write(output[i])
     return output
 
 
@@ -102,9 +101,9 @@ def bcftoolscmd(gvcf_list, shards_padding_list):
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:
-        fai_file_path = sys.argv[1]
+        shard_list = sys.argv[1]
         gvcf_url_file = sys.argv[2]
-        chr_list = split_by_chr_from_fai(fai_file_path)
+        chr_list = split_by_predetermined_list(shard_list)
         gvcf_list = urlproc(gvcf_url_file)
         bcftoolscmd(gvcf_list, chr_list)
     elif len(sys.argv) == 5:
@@ -117,5 +116,5 @@ if __name__ == '__main__':
         bcftoolscmd(gvcf_list, shards_padding_list)
     else:
         print("Usage: python partition_genome.py <FAI_FILE> <NUM_PARTS> <PADDING> <GVCF_URL_FILE>")
-        print("Usage: python partition_genome.py <FAI_FILE> <GVCF_URL_FILE>")
+        print("Usage: python partition_genome.py <SHARD_LIST> <GVCF_URL_FILE>")
         sys.exit(1)
