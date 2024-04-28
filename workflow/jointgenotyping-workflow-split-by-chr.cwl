@@ -125,7 +125,7 @@ steps:
       ${
           var opt_name_list = inputs.shard_list.contents.trim().split("\n");
           opt_name_list = opt_name_list.map(function (i){
-            return inputs.output_file_name_prefix + i.replace(",", "-") + ".vcf.gz";
+            return inputs.output_file_name_prefix + i.replace(/,/g, "-") + ".vcf.gz";
           })
         return {"opt_name_list": opt_name_list};
       }
