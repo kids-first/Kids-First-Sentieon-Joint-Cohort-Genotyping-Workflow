@@ -110,14 +110,11 @@ steps:
   - id: opt_name_list
   run:
     class: ExpressionTool
-  requirements:
-    class: InlineJavascriptRequirement
-  inputs:
+    inputs:
     - id: output_file_name_prefix
       type: string
     - id: shard_list
       type: File
-      loadContents: true
     outputs:
     - id: opt_name_list
       type: string[]
