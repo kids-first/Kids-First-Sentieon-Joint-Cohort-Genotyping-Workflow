@@ -100,6 +100,32 @@ outputs:
   sbg:fileTypes: VCF.GZ
 
 steps:
+- id: opt_name_scatter
+  in: 
+  - id: output_file_name_prefix
+    source: output_file_name_prefix
+  - id: shard_list
+    source: shard_list
+  out:
+  - id: opt_name_list
+  run:
+    class: ExpressionTool
+    inputs:
+    - id: output_file_name_prefix
+      type: string
+    - id: shard_list
+      type: File
+    outputs:
+    - id: opt_name_list
+      type: string[]
+    expression: |
+      ${
+          var opt_name_list = inputs.shard_list.contents.trim().split("\n");
+          opt_name_list = opt_name_list.map(function (i){
+            return inputs.output_file_name_prefix + i.replace(",", "-") + ".vcf.gz";
+          })
+        return {"opt_name_list": opt_name_list};
+      }
 - id: generate_shards
   in:
   - id: shard_list
@@ -137,7 +163,6 @@ steps:
     source: generate_shards/bcftools_cmd
   - id: interval
     source: generate_shards/shard_interval
-    loadContents: true
   - id: dbSNP
     source: dbSNP
   - id: call_conf
@@ -147,16 +172,11 @@ steps:
   - id: genotype_model
     source: genotype_model
   - id: output_file_name
-    source: output_file_name_prefix
-    valueFrom: |-
-      ${
-          var chrname = inputs.interval.contents;
-          var newchrname = chrname.replace(",", "-");
-          return self + "-" + newchrname + ".vcf.gz"
-      }
+    source: opt_name_scatter/opt_name_list
   scatter:
   - bcftools_cmd_list
   - interval
+  - output_file_name
   scatterMethod: dotproduct
   run: ../tools/sentieon_gvcftyper.cwl
   out: [output_vcf]
