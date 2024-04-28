@@ -110,9 +110,9 @@ steps:
   - id: opt_name_list
   run:
     class: ExpressionTool
-  requirements:
-    class: InlineJavascriptRequirement
-  inputs:
+    requirements:
+    - class: InlineJavascriptRequirement
+    inputs:
     - id: output_file_name_prefix
       type: string
     - id: shard_list
