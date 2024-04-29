@@ -38,7 +38,7 @@ steps:
         source: reference
         valueFrom: $(self.secondaryFiles[0])
       num_lines: fai_subset
-    out: [reference_fai_subset, chr_alpha_sort]
+    out: [reference_fai_subset, chr_list]
   generate_shards:
     when: $(inputs.num_shards != null)
     run: ../tools/shard_fai.cwl
@@ -66,7 +66,8 @@ steps:
     run: ../tools/split_by_chr.cwl
     in:
       input_vcf: input_vcf
-      reference_fai: subset_fai/reference_fai_subset
+      chr_list: subset_fai/chr_list
+      chr_array: make_output_name/out_intvl_list
       threads: bcftools_cpu
       sentieon_license: sentieon_license
     scatter: [input_vcf]
@@ -99,7 +100,7 @@ steps:
     in:
       split_by_chr: split_by_chr
       output_file_prefix: output_file_prefix
-      chr_list: subset_fai/chr_alpha_sort
+      chr_list: subset_fai/chr_list
     out: [out_name_list, out_intvl_list]
   get_scatter_index:
     run:

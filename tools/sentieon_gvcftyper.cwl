@@ -28,6 +28,11 @@ requirements:
   - envName: VCFCACHE_BLOCKSIZE
     envValue: "4096"
 - class: InlineJavascriptRequirement
+- class: InitialWorkDirRequirement
+  listing:
+    - entryname: gvcf_list.txt
+      entry:
+        $(inputs.input_gvcf_files.map(function(e) { return e.path }).join('\n'))
 
 $namespaces:
   sbg: https://sevenbridges.com
@@ -51,9 +56,6 @@ inputs:
     required: false
   - pattern: .idx
     required: false
-  inputBinding:
-    position: 300
-    shellQuote: false
   sbg:fileTypes: VCF, VCF.GZ, GVCF, GVCF.GZ
 - id: max_downloads
   doc: Limiting number of concurrent downloads.
@@ -228,6 +230,9 @@ arguments:
     ${
       if (inputs.bcftools_cmd_list)
         return "-"
+      else{
+        return "gvcf_list.txt"
+      }
     }
   shellQuote: false
 
