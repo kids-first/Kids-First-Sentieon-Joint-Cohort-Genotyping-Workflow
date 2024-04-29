@@ -88,6 +88,11 @@ inputs:
     valueFrom: |
       --shard $(self.contents)
     shellQuote: false
+- id: interval
+  type: 'string?'
+  inputBinding:
+    position: 12
+    prefix: "--interval"
 - id: advanced_driver_options
   label: Advanced driver options
   doc: The options for driver.

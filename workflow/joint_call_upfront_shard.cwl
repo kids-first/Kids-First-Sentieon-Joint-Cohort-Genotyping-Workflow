@@ -7,6 +7,7 @@ requirements:
 - class: ScatterFeatureRequirement
 - class: StepInputExpressionRequirement
 - class: InlineJavascriptRequirement
+- class: MultipleInputFeatureRequirement
 inputs:
   reference: { type: File, doc: "Reference fasta with associated fai index", secondaryFiles: ['.fai'], "sbg:fileTypes": "FA, FASTA"}
   fai_subset: { type: 'int?', doc: "Number of lines from head of fai to keep", default: 24 }
@@ -24,7 +25,7 @@ inputs:
     type: ['null', {name: genotype_model, type: enum, symbols: [ "coalescent", "multinomial" ]}], default: multinomial }
   advanced_driver_options: { type: 'string?', default: "--passthru" }
   advanced_algo_options: { type: 'string?', default: "--merge" }
-  output_file_name: {label: Output file name, doc: "The output VCF file name. Must end with .vcf.gz.", type: 'string?' , default: joint_final.vcf.gz }
+  output_file_prefix: {label: Output file name, doc: "The output VCF file prefix name. Must end with .vcf.gz.", type: 'string?' , default: joint_call }
 outputs:
   joint_called_vcf: { type: 'File?', secondaryFiles: ['.tbi'], outputSource: sentieon_gvcftyper_merge/output_vcf }
   joint_called_by_chr_vcf: { type: 'File[]?', secondaryFiles: ['.tbi'], outputSource: sentieon_gvcftyper_distributed/output_vcf }
@@ -70,7 +71,36 @@ steps:
       sentieon_license: sentieon_license
     scatter: [input_vcf]
     out: [split_vcfs]
-
+  make_output_name:
+    run:
+      class: ExpressionTool
+      cwlVersion: v1.2
+      requirements:
+      - class: InlineJavascriptRequirement
+      expression: |
+        ${
+          if (inputs.split_by_chr){
+            var out_intvl_list = inputs.chr_list.contents.trim().split("\n");
+            var out_name_list = out_intvl_list.map(function (i){
+              return inputs.output_file_prefix + "_" + i.replace(/,/g, "-") + ".vcf.gz";
+            })
+            return {"out_name_list": out_name_list, "out_intvl_list": out_intvl_list};
+          } else {
+            return {"out_name_list": [inputs.output_file_prefix + ".vcf.gz"], "out_intvl_list": out_intvl_list};
+          } 
+        }
+      inputs:
+        split_by_chr: boolean
+        output_file_prefix: string
+        chr_list: { type: File, loadContents: true }
+      outputs:
+        out_name_list: 'string[]'
+        out_intvl_list: 'string[]'
+    in:
+      split_by_chr: split_by_chr
+      output_file_prefix: output_file_prefix
+      chr_list: subset_fai/chr_alpha_sort
+    out: [out_name_list, out_intvl_list]
   get_scatter_index:
     run:
       class: CommandLineTool
@@ -108,10 +138,16 @@ steps:
       # shard:
       #   source: generate_shards/shard_interval
       #   valueFrom: $(self[inputs.scatter_index])
+      interval:
+        source: make_output_name/out_intvl_list
+        valueFrom: $(self[inputs.scatter_index])
       dbSNP: dbSNP
       call_conf: call_conf
       emit_conf: emit_conf
       genotype_model: genotype_model
+      output_file_name:
+        source: make_output_name/out_name_list
+        valueFrom: $(self[inputs.scatter_index])
     scatter: [scatter_index]
     scatterMethod: dotproduct
     out: [output_vcf]
@@ -121,12 +157,15 @@ steps:
     run: ../tools/sentieon_gvcftyper.cwl
     label: Sentieon_GVCFtyper_Merge
     in:
+      split_by_chr: split_by_chr
       sentieon_license: sentieon_license
       reference: reference
       advanced_driver_options: advanced_driver_options
       input_gvcf_files: sentieon_gvcftyper_distributed/output_vcf
       advanced_algo_options: advanced_algo_options
-      output_file_name: output_file_name
+      output_file_name:
+        source: make_output_name/out_name_list
+        valueFrom: $(self[0])
     out: [output_vcf]
 
 $namespaces:
