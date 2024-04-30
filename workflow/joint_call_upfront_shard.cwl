@@ -11,7 +11,7 @@ requirements:
 inputs:
   reference: { type: File, doc: "Reference fasta with associated fai index", secondaryFiles: ['.fai'], "sbg:fileTypes": "FA, FASTA"}
   fai_subset: { type: 'int?', doc: "Number of lines from head of fai to keep", default: 24 }
-  num_shards: { type: 'int?', doc: "Nunber of shards to make" }
+  # num_shards: { type: 'int?', doc: "Nunber of shards to make" }
   split_by_chr: { type: 'boolean?', doc: "Split by chr instead", default: false }
   input_vcf: { type: 'File[]', doc: "VCF files to process", secondaryFiles: ['.tbi']}
   bcftools_cpu: { type: 'int?', default: 3 }
@@ -39,25 +39,25 @@ steps:
         valueFrom: $(self.secondaryFiles[0])
       num_lines: fai_subset
     out: [reference_fai_subset, chr_list]
-  generate_shards:
-    when: $(inputs.num_shards != null)
-    run: ../tools/shard_fai.cwl
-    in:
-      reference_index: subset_fai/reference_fai_subset
-      num_shards: num_shards
-    out: [shard_interval, bcftools_padded_scatter]
-  bcftools_shard_vcf:
-    hints:
-    - class: sbg:AWSInstanceType
-      value: c5.12xlarge
-    when: $(inputs.region_scatter_file != null)
-    run: ../tools/bcftools_shard_vcf.cwl
-    in:
-      input_vcf: input_vcf
-      region_scatter_file: generate_shards/bcftools_padded_scatter
-      threads: bcftools_cpu
-    scatter: [input_vcf]
-    out: [sharded_vcfs]
+  # generate_shards:
+  #   when: $(inputs.num_shards != null)
+  #   run: ../tools/shard_fai.cwl
+  #   in:
+  #     reference_index: subset_fai/reference_fai_subset
+  #     num_shards: num_shards
+  #   out: [shard_interval, bcftools_padded_scatter]
+  # bcftools_shard_vcf:
+  #   hints:
+  #   - class: sbg:AWSInstanceType
+  #     value: c5.12xlarge
+  #   when: $(inputs.region_scatter_file != null)
+  #   run: ../tools/bcftools_shard_vcf.cwl
+  #   in:
+  #     input_vcf: input_vcf
+  #     region_scatter_file: generate_shards/bcftools_padded_scatter
+  #     threads: bcftools_cpu
+  #   scatter: [input_vcf]
+  #   out: [sharded_vcfs]
   split_vcf_by_chr:
     hints:
     - class: sbg:AWSInstanceType
@@ -120,7 +120,7 @@ steps:
               $(Array.apply(null, Array(inputs.len_scatter)).map(function(v,i) { return i }))
     in:
       len_scatter:
-        source: [split_by_chr, fai_subset, generate_shards/shard_interval]
+        source: [split_by_chr, fai_subset]
         valueFrom: "$(self[0] ? self[1] : self[2].length)"
     out: [out_array]
 
@@ -173,4 +173,4 @@ $namespaces:
   sbg: https://sevenbridges.com
 hints:
 - class: sbg:maxNumberOfParallelInstances
-  value: 128
+  value: 60
