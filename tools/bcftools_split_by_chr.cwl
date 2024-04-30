@@ -18,7 +18,7 @@ arguments:
 - position: 0
   shellQuote: false
   valueFrom: >-
-    'set -eo pipefail; cat $(inputs.chr_list.path) | xargs -P $(inputs.threads) -ICHR bash -c "set -eo pipefail; bcftools view -r CHR $(inputs.input_vcf.path) | bgzip -c > CHR_$(inputs.input_vcf.nameroot).g.vcf.gz"'
+    'set -eo pipefail; cat $(inputs.chr_list.path) | xargs -P $(inputs.threads) -ICHR bash -c "set -eo pipefail; bcftools view -r CHR $(inputs.input_vcf.path) -o CHR_$(inputs.input_vcf.nameroot).g.vcf.gz -O z && tabix CHR_$(inputs.input_vcf.nameroot).g.vcf.gz"'
 
 inputs:
   input_vcf: { type: File, secondaryFiles: ['.tbi'] }
