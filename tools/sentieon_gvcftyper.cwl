@@ -96,6 +96,14 @@ inputs:
     valueFrom: |
       --shard $(self.contents)
     shellQuote: false
+- id: interval
+  type: File?
+  loadContents: true
+  inputBinding:
+    position: 12
+    valueFrom: |
+      --interval $(self.contents)
+    shellQuote: false
 - id: advanced_driver_options
   label: Advanced driver options
   doc: The options for driver.
