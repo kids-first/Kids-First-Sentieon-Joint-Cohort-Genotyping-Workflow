@@ -37,4 +37,7 @@ outputs:
     outputBinding:
       glob: '*.vcf.gz'
       outputEval: |
-        $( inputs.chr_array.map(function(c) { return c + "_" + inputs.input_vcf.nameroot + ".g.vcf.gz"; } ) )
+        ${
+          var order = inputs.chr_array;
+          return self.sort(function(a, b) { return order.indexOf(a.basename.split('_').shift()) - order.indexOf(b.basename.split('_').shift()) } );
+        }

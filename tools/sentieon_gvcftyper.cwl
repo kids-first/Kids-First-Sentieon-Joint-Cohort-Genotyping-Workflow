@@ -231,7 +231,7 @@ arguments:
       if (inputs.bcftools_cmd_list)
         return "-"
       else{
-        return "gvcf_list.txt"
+        return "- < gvcf_list.txt"
       }
     }
   shellQuote: false
