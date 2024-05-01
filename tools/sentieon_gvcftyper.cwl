@@ -1,5 +1,6 @@
 cwlVersion: v1.2
 class: CommandLineTool
+id: sentieon-gvcftyper
 label: Sentieon_GVCFtyper
 doc: |-
   The Sentieon **GVCFtyper** binary performs joint genotyping using One or more GVCFs.

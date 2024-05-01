@@ -42,7 +42,7 @@ steps:
   split_vcf_by_chr:
     hints:
     - class: sbg:AWSInstanceType
-      value: c5.12xlarge;ebs-gp2;300
+      value: c5.12xlarge
     run: ../tools/bcftools_split_by_chr.cwl
     in:
       input_vcf: input_vcf
