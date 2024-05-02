@@ -14,7 +14,6 @@ inputs:
   chr_list: { type: File }
   chr_array: { type: 'string[]', doc: "chr list as str array"}
   threads: { type: 'int?', default: 4 }
-  # sentieon_license: { type: 'string?', doc: "Sentieon license server IP and port", default: "10.5.59.108:8990"}
 outputs:
   split_vcfs:
     type:
@@ -26,19 +25,6 @@ outputs:
 
 
 steps:
-#   split_vcf_by_chr:
-#     hints:
-#     - class: sbg:AWSInstanceType
-#       value: c5.12xlarge;ebs-gp2;300
-#     run: ../tools/split_by_chr.cwl
-#     in:
-#       input_vcf: input_vcf
-#       chr_list: chr_list
-#       chr_array: chr_array
-#       threads: threads
-#       sentieon_license: sentieon_license
-#     scatter: [input_vcf]
-#     out: [split_vcfs]
   split_vcf_by_chr:
     hints:
     - class: sbg:AWSInstanceType
