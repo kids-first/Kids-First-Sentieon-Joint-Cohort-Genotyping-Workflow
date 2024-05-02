@@ -1,5 +1,6 @@
 cwlVersion: v1.2
 class: CommandLineTool
+id: sentieon-gvcftyper
 label: Sentieon_GVCFtyper
 doc: |-
   The Sentieon **GVCFtyper** binary performs joint genotyping using One or more GVCFs.
@@ -28,6 +29,11 @@ requirements:
   - envName: VCFCACHE_BLOCKSIZE
     envValue: "4096"
 - class: InlineJavascriptRequirement
+- class: InitialWorkDirRequirement
+  listing:
+    - entryname: gvcf_list.txt
+      entry:
+        $(inputs.input_gvcf_files.map(function(e) { return e.path }).join('\n'))
 
 $namespaces:
   sbg: https://sevenbridges.com
@@ -59,10 +65,7 @@ inputs:
     required: false
   - pattern: .idx
     required: false
-  inputBinding:
-    position: 300
-    shellQuote: false
-  sbg:fileTypes: VCF, VCF.GZ, GVCF, GVCF.GZ, TXT
+  sbg:fileTypes: VCF, VCF.GZ, GVCF, GVCF.GZ
 - id: max_downloads
   doc: Limiting number of concurrent downloads.
   type: int?
@@ -97,13 +100,10 @@ inputs:
       --shard $(self.contents)
     shellQuote: false
 - id: interval
-  type: File?
-  loadContents: true
+  type: 'string?'
   inputBinding:
     position: 12
-    valueFrom: |
-      --interval $(self.contents)
-    shellQuote: false
+    prefix: "--interval"
 - id: advanced_driver_options
   label: Advanced driver options
   doc: The options for driver.
@@ -239,6 +239,9 @@ arguments:
     ${
       if (inputs.bcftools_cmd_list)
         return "-"
+      else{
+        return "- < gvcf_list.txt"
+      }
     }
   shellQuote: false
 
