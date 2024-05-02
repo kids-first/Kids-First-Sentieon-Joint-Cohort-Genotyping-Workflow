@@ -20,7 +20,7 @@ requirements:
 inputs:
 - id: reference_index
   label: Reference FAI index
-  type: File
+  type: File?
   inputBinding:
     position: 1
     shellQuote: true
@@ -28,10 +28,16 @@ inputs:
 - id: num_parts
   label: Number of shards.
   type: int?
-  default: 60
   inputBinding:
     position: 2
     shellQuote: true
+    valueFrom:
+      $(self) 200
+- id: shard_list
+  label: The list of predetermined shards
+  type: File?
+  inputBinding:
+    position: 2
 - id: input_gvcf_list
   type: File
   inputBinding:
@@ -51,7 +57,3 @@ outputs:
 baseCommand:
 - python
 - partition_genome.py
-arguments:
-- position: 3
-  valueFrom: "200"
-  shellQuote: false

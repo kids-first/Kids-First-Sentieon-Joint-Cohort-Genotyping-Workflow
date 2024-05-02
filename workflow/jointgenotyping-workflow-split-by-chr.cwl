@@ -1,6 +1,6 @@
 cwlVersion: v1.2
 class: Workflow
-label: Sentieon Distributed Joint Genotyping Workflow
+label: Sentieon Distributed Joint Genotyping Workflow by Chromosome
 
 requirements:
 - class: ScatterFeatureRequirement
@@ -24,10 +24,9 @@ inputs:
   - pattern: .fai
     required: true
   sbg:fileTypes: FA, FASTA
-- id: fai_subset
-  type: 'int?'
-  doc: "Number of lines from head of fai to keep"
-  default: 25
+- id: shard_list
+  type: File
+  doc: The list of shards. Comma-separated like this "chr21,chr22"
 - id: input_gvcf_list
   label: Input GVCF
   doc: |-
@@ -66,9 +65,6 @@ inputs:
 - id: aws_creds_export
   type: File?
   doc: "File with AWS credentials to source instead of string args"
-- id: num_parts
-  label: Number of shards.
-  type: int?
 - id: max_downloads
   type: int?
 - id: call_conf
@@ -89,37 +85,54 @@ inputs:
     symbols:
     - coalescent
     - multinomial
-- id: output_file_name
-  label: Output file name
-  doc: The output VCF file name. Must end with ".vcf.gz".
-  type: string?
+- id: output_file_name_prefix
+  type: string
+  label: The prefix of output file names
 
 outputs:
 - id: output_vcf
-  type: File
+  type: File[]
   secondaryFiles:
   - pattern: .tbi
     required: true
   outputSource:
-  - sentieon_gvcftyper_merge/output_vcf
+  - sentieon_gvcftyper_distributed/output_vcf
   sbg:fileTypes: VCF.GZ
 
 steps:
-- id: fai_cleanup
-  run: ../tools/fai_subset.cwl
-  in:
-    - id: reference_fai
-      source: reference
-      valueFrom: $(self.secondaryFiles[0])
-    - id: num_lines
-      source: fai_subset
-  out: [reference_fai_subset]
+- id: opt_name_scatter
+  in: 
+  - id: output_file_name_prefix
+    source: output_file_name_prefix
+  - id: shard_list
+    source: shard_list
+  out:
+  - id: opt_name_list
+  run:
+    class: ExpressionTool
+    requirements:
+    - class: InlineJavascriptRequirement
+    inputs:
+    - id: output_file_name_prefix
+      type: string
+    - id: shard_list
+      type: File
+      loadContents: true
+    outputs:
+    - id: opt_name_list
+      type: string[]
+    expression: |
+      ${
+          var opt_name_list = inputs.shard_list.contents.trim().split("\n");
+          opt_name_list = opt_name_list.map(function (i){
+            return inputs.output_file_name_prefix + i.replace(/,/g, "-") + ".vcf.gz";
+          })
+        return {"opt_name_list": opt_name_list};
+      }
 - id: generate_shards
   in:
-  - id: reference_index
-    source: fai_cleanup/reference_fai_subset
-  - id: num_parts
-    source: num_parts
+  - id: shard_list
+    source: shard_list
   - id: input_gvcf_list
     source: input_gvcf_list
   run: ../tools/generate_shards.cwl
@@ -127,9 +140,9 @@ steps:
   - id: bcftools_cmd
   - id: shard_interval
 - id: sentieon_gvcftyper_distributed 
-  # hints:
-  # - class: 'sbg:AWSInstanceType'
-  #   value: c5.12xlarge
+  hints:
+  - class: 'sbg:AWSInstanceType'
+    value: c5.12xlarge
   in:
   - id: sentieon_license
     source: sentieon_license
@@ -151,7 +164,7 @@ steps:
     source: max_downloads
   - id: bcftools_cmd_list
     source: generate_shards/bcftools_cmd
-  - id: shard
+  - id: interval
     source: generate_shards/shard_interval
   - id: dbSNP
     source: dbSNP
@@ -161,29 +174,12 @@ steps:
     source: emit_conf
   - id: genotype_model
     source: genotype_model
+  - id: output_file_name
+    source: opt_name_scatter/opt_name_list
   scatter:
   - bcftools_cmd_list
-  - shard
+  - interval
+  - output_file_name
   scatterMethod: dotproduct
   run: ../tools/sentieon_gvcftyper.cwl
   out: [output_vcf]
-- id: sentieon_gvcftyper_merge
-  label: Sentieon_GVCFtyper_Merge
-  in:
-  - id: sentieon_license
-    source: sentieon_license
-  - id: reference
-    source: reference
-  - id: advanced_driver_options
-    default: --passthru
-  - id: input_gvcf_files
-    source:
-    - sentieon_gvcftyper_distributed/output_vcf
-  - id: advanced_algo_options
-    default: --merge
-  - id: output_file_name
-    source: output_file_name
-    default: joint_final.vcf.gz
-  run: ../tools/sentieon_gvcftyper.cwl
-  out:
-  - id: output_vcf

@@ -43,6 +43,14 @@ inputs:
   label: Sentieon license
   doc: License server host and port
   type: string
+- id: aws_creds_export
+  type: File?
+  doc: "File with AWS credentials to source"
+  inputBinding:
+    position: 1
+    shellQuote: false
+    valueFrom: |-
+      . $(self.path) ;
 - id: AWS_ACCESS_KEY_ID
   type: string?
 - id: AWS_SECRET_ACCESS_KEY
@@ -67,10 +75,10 @@ inputs:
   doc: |-
     The command lines to download partial VCFs. One bcftools command per gVCF
   inputBinding:
-    position: 1
+    position: 2
     shellQuote: false
     valueFrom: |-
-      set -eo pipefail; mkdir input_folder; parallel -P $(inputs.max_downloads) --jl parallel.log --shuf --timeout 1200 --retries 5 bash -c :::: $(self.path) || exit 1; find -type f -name 'sample-*.g.vcf.gz' | sort |
+      set -eo pipefail; mkdir input_folder; parallel -P $(inputs.max_downloads) --jl parallel.log --shuf --timeout 1200 --retries 5 --delay 5 bash -c :::: $(self.path) || exit 1; find -type f -name 'sample-*.g.vcf.gz' | sort |
 - id: reference
   label: Reference
   doc: Reference fasta file with associated indexes
