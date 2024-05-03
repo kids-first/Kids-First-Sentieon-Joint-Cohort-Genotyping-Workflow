@@ -4,6 +4,8 @@ It will split the input gVCF files, using up to AWS 60 c5.12xlarge instances, an
 Then, all of the gVCF chromosome fragments are split, one instance per chromosome, to a Sentieon GVCFtyper job.
 If the user supplies a dbSNP vcf at run time, the outputs will also be annotated with `rs_` IDs in the `ID` column of the VCF.
 
+![data service logo](https://github.com/d3b-center/d3b-research-workflows/raw/master/doc/kfdrc-logo-sm.png)
+
 ## Limitations
 Two main limitations currently (as of May 2024) exist for running this cohort workflow on CAVATICA:
  - Cohort Size
