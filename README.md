@@ -2,7 +2,8 @@
 
 This is a work in progress and under active development.
 An efficient, fast, and cost effective workflow for joint calling cohorts up to ~4000 individuals on the CAVATICA platform.
-You will likely need to have installed [sbpack](https://pypi.org/project/sbpack/) to push the necessary apps into your project, and it is recommended to have the python packages listed in `python_pip_requirements.txt` installed
+You will likely need to have installed [sbpack](https://pypi.org/project/sbpack/) to push the necessary apps into your project, and it is recommended to have the python packages listed in `python_pip_requirements.txt` installed.
+Both workflows have limited implementations of the [`GVGFtyper` algo](https://support.sentieon.com/manual/usages/general/#gvcftyper-algorithm) which is part of the [sentieon driver library](https://support.sentieon.com/manual/usages/general/#driver-binary)
 
 ![data service logo](https://github.com/d3b-center/d3b-research-workflows/raw/master/doc/kfdrc-logo-sm.png)
 
