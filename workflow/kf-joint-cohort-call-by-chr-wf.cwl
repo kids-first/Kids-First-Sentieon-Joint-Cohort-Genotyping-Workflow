@@ -82,7 +82,8 @@ steps:
         source: reference
         valueFrom: $(self.secondaryFiles[0])
       num_lines: fai_subset
-    out: [reference_fai_subset, chr_list]
+      output_file_prefix: output_file_prefix
+    out: [reference_fai_subset, chr_list, chr_array, output_filename_list]
 
   split_vcf_by_chr:
     hints:
@@ -92,34 +93,10 @@ steps:
     in:
       input_vcf: input_vcf
       chr_list: subset_fai/chr_list
-      chr_array: make_output_name/out_intvl_list
+      chr_array: subset_fai/chr_array
       threads: bcftools_cpu
     scatter: [input_vcf]
     out: [split_vcfs]
-  make_output_name:
-    run:
-      class: ExpressionTool
-      cwlVersion: v1.2
-      requirements:
-      - class: InlineJavascriptRequirement
-      expression: |
-        ${
-          var out_intvl_list = inputs.chr_list.contents.trim().split("\n");
-          var out_name_list = out_intvl_list.map(function (i){
-            return inputs.output_file_prefix + "_" + i.replace(/,/g, "-") + ".vcf.gz";
-          })
-          return {"out_name_list": out_name_list, "out_intvl_list": out_intvl_list};
-        }
-      inputs:
-        output_file_prefix: string
-        chr_list: {type: File, loadContents: true}
-      outputs:
-        out_name_list: 'string[]'
-        out_intvl_list: 'string[]'
-    in:
-      output_file_prefix: output_file_prefix
-      chr_list: subset_fai/chr_list
-    out: [out_name_list, out_intvl_list]
   get_scatter_index:
     run:
       class: CommandLineTool
@@ -139,7 +116,6 @@ steps:
     in:
       len_scatter: fai_subset
     out: [out_array]
-
   sentieon_gvcftyper_distributed:
     run: ../tools/sentieon_gvcftyper.cwl
     in:
@@ -152,17 +128,13 @@ steps:
         source: split_vcf_by_chr/split_vcfs
         valueFrom: |
           $(self.map(function(e) { return e[inputs.scatter_index] }))
-      interval:
-        source: make_output_name/out_intvl_list
-        valueFrom: $(self[inputs.scatter_index])
+      interval: subset_fai/chr_array
       dbSNP: dbSNP
       call_conf: call_conf
       emit_conf: emit_conf
       genotype_model: genotype_model
-      output_file_name:
-        source: make_output_name/out_name_list
-        valueFrom: $(self[inputs.scatter_index])
-    scatter: [scatter_index]
+      output_file_name: subset_fai/output_filename_list
+    scatter: [interval, output_file_name, scatter_index]
     scatterMethod: dotproduct
     out: [output_vcf]
 
