@@ -1,4 +1,4 @@
-# [Kids First-Senteion Joint Cohort Calling Workflow Beta](../workflow/kf-joint-cohort-call-by-chr-wf.cwl)
+# [Kids First-Sentieon Joint Cohort Calling Workflow Beta](../workflow/kf-joint-cohort-call-by-chr-wf.cwl)
 This workflow is takes a set of gVCF files from a desired cohort and an indexed FASTA reference to create a joint-called cohort.
 It will split the input gVCF files, using up to AWS 60 c5.12xlarge instances, and stack 12 gVCF files per instance to split them by chromosome.
 Then, all of the gVCF chromosome fragments are split, one instance per chromosome, to a Sentieon GVCFtyper job.
