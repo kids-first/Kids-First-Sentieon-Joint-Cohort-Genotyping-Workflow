@@ -4,7 +4,9 @@ The input gVCFs are sharded by chromosome. To accelerate the process, the shardi
 Next, gVCF shards that share a common chromosome are gathered and passed to Sentieon GVCFtyper, producing one joint VCF per chromosome.
 If the user supplies a dbSNP vcf at run time, the outputs will also be annotated with `rs_` IDs in the `ID` column of the VCF.
 
-![data service logo](https://github.com/d3b-center/d3b-research-workflows/raw/master/doc/kfdrc-logo-sm.png)
+<p align="center">
+ <img src="https://github.com/d3b-center/d3b-research-workflows/raw/master/doc/kfdrc-logo-sm.png" alt="data service logo"/>
+</p>
 
 ## Limitations
 Two main limitations currently (as of May 2024) exist for running this cohort workflow on CAVATICA:
