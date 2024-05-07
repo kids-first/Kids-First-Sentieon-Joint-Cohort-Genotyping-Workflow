@@ -3,7 +3,7 @@
 This is a work in progress and under active development.
 An efficient, fast, and cost effective workflow for joint calling cohorts up to ~4000 individuals on the CAVATICA platform.
 You will likely need to have installed [sbpack](https://pypi.org/project/sbpack/) to push the necessary apps into your project, and it is recommended to have the python packages listed in `python_pip_requirements.txt` installed.
-Both workflows have limited implementations of the [`GVGFtyper` algo](https://support.sentieon.com/manual/usages/general/#gvcftyper-algorithm) which is part of the [sentieon driver library](https://support.sentieon.com/manual/usages/general/#driver-binary)
+Both workflows have limited implementations of the [`GVGFtyper` algo](https://support.sentieon.com/manual/usages/general/#gvcftyper-algorithm) which is part of the [Sentieon driver library](https://support.sentieon.com/manual/usages/general/#driver-binary).
 
 ![data service logo](https://github.com/d3b-center/d3b-research-workflows/raw/master/doc/kfdrc-logo-sm.png)
 
@@ -13,7 +13,7 @@ Both workflows have limited implementations of the [`GVGFtyper` algo](https://su
 
 ## [Easy Cohort Calling Workflow](docs/KF_COHORT_JG_SINGLE_WF.md)
 This workflow runs on the CAVATICA platform with few parameters necessary to run.
-The platform has an internal workflow scatter limit of ~2200 files, which means, **if your cohort size is greater than this, it will not run!**.
+The platform has an internal workflow scatter limit of ~2200 files, which means, **if your cohort size is greater than this, it will not run!**
 To load this app into your project, follow the instructions in the [sbpack](https://pypi.org/project/sbpack/) install to load `workflow/kf-joint-cohort-call-by-chr-wf.cwl`
 
 ## [Advanced Cohort Calling Workflow](docs/KF_NOTEBOOK_JG_WORKFLOW.md)
