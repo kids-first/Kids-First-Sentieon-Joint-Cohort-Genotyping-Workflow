@@ -10,7 +10,7 @@ requirements:
 - class: ResourceRequirement
   coresMin: $(inputs.threads)
 - class: DockerRequirement
-  dockerPull: pgc-images.sbgenomics.com/brownm28/bcftools:1.19
+  dockerPull: pgc-images.sbgenomics.com/d3b-bixu/bcftools:1.20
 - class: InlineJavascriptRequirement
 
 baseCommand: [bash -c]
