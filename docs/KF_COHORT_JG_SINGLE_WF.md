@@ -1,5 +1,5 @@
 # [Kids First-Sentieon Joint Cohort Calling Workflow Beta](../workflow/kf-joint-cohort-call-by-chr-wf.cwl)
-This workflow is takes a set of gVCFs and an indexed reference FASTA to create a joint-called cohort VCF.
+This workflow takes a set of gVCFs and an indexed reference FASTA to create a joint-called cohort VCF.
 The input gVCFs are sharded by chromosome. To accelerate the process, the sharding is done across 60 instances, each of which is processing 12 files at a time.
 Next, gVCF shards that share a common chromosome are gathered and passed to Sentieon GVCFtyper, producing one joint VCF per chromosome.
 If the user supplies a dbSNP vcf at run time, the outputs will also be annotated with `rs_` IDs in the `ID` column of the VCF.
