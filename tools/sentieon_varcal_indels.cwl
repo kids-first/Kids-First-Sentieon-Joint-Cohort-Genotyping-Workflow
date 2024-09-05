@@ -9,7 +9,7 @@ requirements:
 - class: ShellCommandRequirement
 - class: ResourceRequirement
   coresMin: $(Math.max(inputs.threads, 8))
-  ramMin: 16000
+  ramMin: $(inputs.ram * 1000)
 - class: DockerRequirement
   dockerPull: pgc-images.sbgenomics.com/hdchen/sentieon:202308.02_cavatica
 - class: EnvVarRequirement
@@ -37,6 +37,7 @@ arguments:
     $(inputs.output_basename).recal
 inputs:
   sentieon_license: { type: string, doc: "Sentieon license server and port, in format 0.0.0.0:0000 " }
+  ram: { type: 'int?', doc: "RAM in GB to make available to this task", default: 16 }
   threads: { type: 'int?', doc: "number of computing threads that will be used by the software to run parallel processes. See srand doc for deterministic behavior",
     default: 1, inputBinding: { position: 1, prefix: "-t" } }
   reference: { type: File, secondaryFiles: ['.fai'],  doc: "location of the reference FASTA file",
@@ -48,10 +49,10 @@ inputs:
   max_gaussians: { type: 'int?', doc: "determines the maximum number of Gaussians that will be used for the positive recalibration model",
     default: 4, inputBinding: { position: 2, prefix: "--max_gaussians"} }
   tranche: { type: ['null', { type: array, items: float,  inputBinding: { prefix: "--tranche", separate: true }}], doc: "normalized quality threshold for each tranche; the TRANCH_THRESHOLD number is a number between 0 and 100. Multiple instances of the option are allowed that will create as many tranches as there are thresholds",
-    default: [100.0, 99.95, 99.9, 99.5, 99.0, 97.0, 96.0, 95.0, 94.0, 93.5, 93.0, 92.0, 91.0, 90.0 ], inputBinding: { position: 2 } }
+    default: [ 100.0, 99.95, 99.9, 99.5, 99.0, 97.0, 96.0, 95.0, 94.0, 93.5, 93.0, 92.0, 91.0, 90.0 ], inputBinding: { position: 2 } }
   annotation: { type: ['null', {type: array, items: string, inputBinding: { prefix: "--annotation", separate: true }}], doc: "determine annotation that will be used during the recalibration",
-    default: ['FS', 'ReadPosRankSum', 'MQRankSum', 'QD', 'SOR', 'DP'], inputBinding: { position: 2 } }
-  srand: { type: 'int?', doc: "determines the seed to use in the random number generation. You can set RANDOM_SEED to 0 and the software will use the random seed from your computer. In order to generate a deterministic result, you should use a non-zero RANDOM_SEED and set the NUMBER_THREADS to 1",
+    default: [ 'FS', 'ReadPosRankSum', 'MQRankSum', 'QD', 'SOR', 'DP' ], inputBinding: { position: 2 } }
+  srand: { type: 'int?', doc: "Determines the seed to use in the random number generation. You can set RANDOM_SEED to 0 and the software will use the random seed from your computer. In order to generate a deterministic result, you should use a non-zero RANDOM_SEED and set the NUMBER_THREADS to 1",
     default: 42, inputBinding: {position: 2, prefix: "--srand"} }
   output_basename: { type: 'string?', default: "indels"}
 

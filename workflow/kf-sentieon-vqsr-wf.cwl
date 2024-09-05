@@ -15,11 +15,13 @@ inputs:
     "sbg:suggestedValue": {class: File, path: 60639014357c3a53540ca7a3, name: Homo_sapiens_assembly38.fasta, secondaryFiles: [{class: File,
           path: 60639016357c3a53540ca7af, name: Homo_sapiens_assembly38.fasta.fai}]}}
   input_vcfs: {type: 'File[]', doc: "VCF files to process", secondaryFiles: ['.tbi']}
-  bcftools_cpu: { type: 'int?', default: 16 }
+  output_basename: string
+  bcftools_cpu: { type: 'int?', default: 8 }
   output_type: { type: ['null', {type: enum, name: output_type, symbols: ["b", "u", "v", "z"] } ], default: "z",
     doc: "b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]" }
   sentieon_license: {type: 'string?', doc: "License server host and port", default: "10.5.64.221:8990"}
   varcal_threads: { type: 'int?', doc: "Number of threads to set for VarCal. MUST BE 1 IF YOU WANT IT TO BE DETERMINISTIC", default: 1 }
+  srand: { type: 'int?', default: 42, doc: "Determines the seed to use in the random number generation. You can set RANDOM_SEED to 0 and the software will use the random seed from your computer. In order to generate a deterministic result, you should use a non-zero RANDOM_SEED"}
   axiomPoly_resource_vcf: {type: File, secondaryFiles: [{pattern: '.tbi', required: true}], doc: 'Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz',
     "sbg:suggestedValue": {class: File, path: 60639016357c3a53540ca7c7, name: Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz,
       secondaryFiles: [{class: File, path: 6063901d357c3a53540ca81b, name: Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz.tbi}]}}
@@ -38,13 +40,22 @@ inputs:
   one_thousand_genomes_resource_vcf: {type: File, secondaryFiles: [{pattern: '.tbi', required: true}], doc: '1000G_phase1.snps.high_confidence.hg38.vcf.gz,
       high confidence snps', "sbg:suggestedValue": {class: File, path: 6063901c357c3a53540ca80f, name: 1000G_phase1.snps.high_confidence.hg38.vcf.gz,
       secondaryFiles: [{class: File, path: 6063901e357c3a53540ca845, name: 1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi}]}}
-  snp_max_gaussians: {type: 'int?', doc: "Interger value for max gaussians in SNP VariantRecalibration. If a dataset gives fewer variants
+  snp_max_gaussians: {type: 'int?', default: 6, doc: "Integer value for max gaussians in SNP VariantRecalibration. If a dataset gives fewer variants
       than the expected scale, the number of Gaussians for training should be turned down. Lowering the max-Gaussians forces the program
       to group variants into a smaller number of clusters, which results in more variants per cluster."}
-  indel_max_gaussians: {type: 'int?', doc: "Interger value for max gaussians in INDEL VariantRecalibration. If a dataset gives fewer
+  snp_tranche: { type: ['null', { type: array, items: float } ], doc: "normalized quality threshold for each tranche; the TRANCH_THRESHOLD number is a number between 0 and 100. Multiple instances of the option are allowed that will create as many tranches as there are thresholds",
+    default: [ 100.0, 99.95, 99.9, 99.8, 99.6, 99.5, 99.4, 99.3, 99.0, 98.0, 97.0, 90.0 ] }
+  snp_annotation: { type: ['null', { type: array, items: string } ], doc: "determine annotation that will be used during the recalibration",
+    default: [ 'QD', 'MQRankSum', 'ReadPosRankSum', 'FS', 'MQ', 'SOR', 'DP' ] }
+  indel_max_gaussians: {type: 'int?', default: 4, doc: "Integer value for max gaussians in INDEL VariantRecalibration. If a dataset gives fewer
       variants than the expected scale, the number of Gaussians for training should be turned down. Lowering the max-Gaussians forces
-      the program to group variants into a smaller number of clusters, which results in more variants per cluster."}
-  output_basename: string
+      the program to group variants into a smaller number of clusters, which results in more variants per cluster." }
+  indel_tranche: { type: ['null', { type: array, items: float } ], doc: "normalized quality threshold for each tranche; the TRANCH_THRESHOLD number is a number between 0 and 100. Multiple instances of the option are allowed that will create as many tranches as there are thresholds",
+    default: [ 100.0, 99.95, 99.9, 99.5, 99.0, 97.0, 96.0, 95.0, 94.0, 93.5, 93.0, 92.0, 91.0, 90.0 ] }
+  indel_annotation: { type: ['null', { type: array, items: string } ], doc: "determine annotation that will be used during the recalibration",
+    default: [ 'FS', 'ReadPosRankSum', 'MQRankSum', 'QD', 'SOR', 'DP' ] }
+
+
 outputs:
   vqsr_vcf: { type: File, outputSource: Sentieon_ApplyVarCal/vqsr_vcf }
 
@@ -72,6 +83,9 @@ steps:
       omni_resource_vcf: omni_resource_vcf
       one_thousand_genomes_resource_vcf: one_thousand_genomes_resource_vcf
       max_gaussians: snp_max_gaussians
+      srand: srand
+      tranche: snp_tranche
+      annotation: snp_annotation
     out: [recal, tranches]
   Sentieon_VarCal_INDELs:
     run: ../tools/sentieon_varcal_indels.cwl
@@ -84,6 +98,9 @@ steps:
       dbsnp_resource_vcf: dbsnp_vcf
       mills_resource_vcf: mills_resource_vcf
       max_gaussians: indel_max_gaussians
+      srand: srand
+      tranche: indel_tranche
+      annotation: indel_annotation
     out: [recal, tranches]
   Sentieon_ApplyVarCal:
     run: ../tools/sentieon_apply_varcal.cwl

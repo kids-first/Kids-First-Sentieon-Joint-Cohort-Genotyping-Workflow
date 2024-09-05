@@ -9,7 +9,7 @@ requirements:
 - class: ShellCommandRequirement
 - class: ResourceRequirement
   coresMin: $(Math.max(inputs.threads, 8))
-  ramMin: 16000
+  ramMin: $(inputs.ram * 1000)
 - class: DockerRequirement
   dockerPull: pgc-images.sbgenomics.com/hdchen/sentieon:202308.02_cavatica
 - class: EnvVarRequirement
@@ -38,6 +38,7 @@ inputs:
   sentieon_license: { type: string, doc: "Sentieon license server and port, in format 0.0.0.0:0000 " }
   threads: { type: 'int?', doc: "number of computing threads that will be used by the software to run parallel processes. See srand doc for deterministic behavior",
     default: 8, inputBinding: { position: 1, prefix: "-t" } }
+  ram: { type: 'int?', doc: "RAM in GB to make available to this task", default: 16 }
   reference: { type: File, secondaryFiles: ['.fai'],  doc: "location of the reference FASTA file",
     inputBinding: { position: 1, prefix: "--reference"} }
   input_vcf: { type: File, secondaryFiles: ['.tbi'], inputBinding: { position: 2, prefix: "-v"} }
