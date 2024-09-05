@@ -18,8 +18,6 @@ inputs:
   bcftools_cpu: { type: 'int?', default: 16 }
   output_type: { type: ['null', {type: enum, name: output_type, symbols: ["b", "u", "v", "z"] } ], default: "z",
     doc: "b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]" }
-  write_index: { type: ['null', {type: enum, name: output_type, symbols: ["tbi", "csi"] } ], default: "tbi",
-    doc: "Automatically index the output file" }
   sentieon_license: {type: 'string?', doc: "License server host and port", default: "10.5.64.221:8990"}
   axiomPoly_resource_vcf: {type: File, secondaryFiles: [{pattern: '.tbi', required: true}], doc: 'Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz',
     "sbg:suggestedValue": {class: File, path: 60639016357c3a53540ca7c7, name: Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz,
@@ -58,7 +56,6 @@ steps:
         source: output_basename
         valueFrom: $(self).merged.vcf.gz
       output_type: output_type
-      write_index: write_index
       input_vcfs: input_vcfs
     out: [merged_vcf]
   Sentieon_VarCal_SNPs:

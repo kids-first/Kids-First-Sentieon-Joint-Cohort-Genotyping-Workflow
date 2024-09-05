@@ -15,6 +15,18 @@ requirements:
 - class: InlineJavascriptRequirement
 
 baseCommand: [bcftools, concat]
+arguments:
+- position: 3
+  shellQuote: false
+  valueFrom: >-
+    ${
+      if (inputs.output_type == "z"){
+        return "&& tabix --threads " + inputs.threads + " " + inputs.output;
+      }
+      else{
+        return "";
+      }
+    }
 
 inputs:
   threads: { type: 'int?', default: 8,
@@ -23,7 +35,6 @@ inputs:
     inputBinding: { position: 1, prefix: "--output"} }
   output_type: { type: ['null', {type: enum, name: output_type, symbols: ["b", "u", "v", "z"] } ], doc: "b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]",
     inputBinding: { position: 1, prefix: "--output-type" } }
-  write_index: { type: ['null', {type: enum, name: output_type, symbols: ["tbi", "csi"] } ], inputBinding: { position: 1, prefix: "--write-index=", separate: false }, doc: "Automatically index the output file" }
   input_vcfs: { type: 'File[]', secondaryFiles: ['.tbi'],
    inputBinding: { position: 2} }
 outputs:
