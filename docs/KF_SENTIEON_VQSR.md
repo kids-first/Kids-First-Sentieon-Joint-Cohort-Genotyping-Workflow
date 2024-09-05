@@ -9,7 +9,7 @@ It is to be run after the [Kids First-Sentieon Joint Cohort Calling](../README.m
 ### Required:
  - `reference`: Indexed FASTA file reference. Should be the same one used to create the input gVCFs
  - `input_vcfs`: Array of by-chromosome joint called VCFs. Workflow will merge before applying VQSR
- - `sentieon_license`: Sentieon license server host and port in format `0.0.0.0:0000`. Is set by default by the workflow, but can be changed if circumstances require it.
+ - `sentieon_license`: Sentieon license server host and port in format `0.0.0.0:0000`. Is set by default by the workflow, but can be changed if circumstances require it
  - `dbsnp_vcf`: Homo_sapiens_assembly38.dbsnp138.vcf # pulled by workflow by default
  - `hapmap_resource_vcf`: hapmap_3.3.hg38.vcf.gz
  - `mills_resource_vcf`: Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
@@ -17,10 +17,11 @@ It is to be run after the [Kids First-Sentieon Joint Cohort Calling](../README.m
  - `one_thousand_genomes_resource_vcf`: 1000G_phase1.snps.high_confidence.hg38.vcf.gz
  - `output_basename`: String to prepend to output
 ### Optional
- - `bcftools_cpu`: Default `16`. Number of cores to be used ot merge VCFs
+ - `bcftools_cpu`: Default `8`. Number of cores to be used ot merge VCFs
  - `output_type` Default `z`. Format of merged variants file
- - `varcal_threads`: Default 1. Sentieon documentation states for VarCal to be deterministic, it must be set 1, but will be much slower.
-  - `srand`: Default `42`. Determines the seed to use in the random number generation. You can set RANDOM_SEED to 0 and the software will use the random seed from your computer. In order to generate a deterministic result, you should use a non-zero RANDOM_SEED
+ - `varcal_threads`: Default `1`. Sentieon documentation states for VarCal to be deterministic, it must be set 1, but will be much slower
+ `varcal_ram`: Default `16`. RAM in GB to providew to VarCal jobs. May need to increase depending on size of input
+ - `srand`: Default `42`. Determines the seed to use in the random number generation. You can set RANDOM_SEED to 0 and the software will use the random seed from your computer. In order to generate a deterministic result, you should use a non-zero RANDOM_SEED
  - `snp_max_gaussians`: Default `6`. Integer value for max gaussians in SNP VariantRecalibration. If a dataset gives fewer variants
       than the expected scale, the number of Gaussians for training should be turned down. Lowering the max-Gaussians forces the program
       to group variants into a smaller number of clusters, which results in more variants per cluster

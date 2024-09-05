@@ -21,6 +21,7 @@ inputs:
     doc: "b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]" }
   sentieon_license: {type: 'string?', doc: "License server host and port", default: "10.5.64.221:8990"}
   varcal_threads: { type: 'int?', doc: "Number of threads to set for VarCal. MUST BE 1 IF YOU WANT IT TO BE DETERMINISTIC", default: 1 }
+  varcal_ram: { type: 'int?', default: 16, doc: "RAM in GB to providew to VarCal jobs. May need to increase depending on size of input"}
   srand: { type: 'int?', default: 42, doc: "Determines the seed to use in the random number generation. You can set RANDOM_SEED to 0 and the software will use the random seed from your computer. In order to generate a deterministic result, you should use a non-zero RANDOM_SEED"}
   axiomPoly_resource_vcf: {type: File, secondaryFiles: [{pattern: '.tbi', required: true}], doc: 'Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz',
     "sbg:suggestedValue": {class: File, path: 60639016357c3a53540ca7c7, name: Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz,
@@ -76,6 +77,7 @@ steps:
     in:
       sentieon_license: sentieon_license
       threads: varcal_threads
+      ram: varcal_ram
       reference: reference
       input_vcf: bcftools_concat/merged_vcf
       dbsnp_resource_vcf: dbsnp_vcf
@@ -92,6 +94,7 @@ steps:
     in:
       sentieon_license: sentieon_license
       threads: varcal_threads
+      ram: varcal_ram
       reference: reference
       input_vcf: bcftools_concat/merged_vcf
       axiomPoly_resource_vcf: axiomPoly_resource_vcf
