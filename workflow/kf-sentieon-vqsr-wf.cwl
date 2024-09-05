@@ -19,6 +19,7 @@ inputs:
   output_type: { type: ['null', {type: enum, name: output_type, symbols: ["b", "u", "v", "z"] } ], default: "z",
     doc: "b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]" }
   sentieon_license: {type: 'string?', doc: "License server host and port", default: "10.5.64.221:8990"}
+  varcal_threads: { type: 'int?', doc: "Number of threads to set for VarCal. MUST BE 1 IF YOU WANT IT TO BE DETERMINISTIC", default: 1 }
   axiomPoly_resource_vcf: {type: File, secondaryFiles: [{pattern: '.tbi', required: true}], doc: 'Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz',
     "sbg:suggestedValue": {class: File, path: 60639016357c3a53540ca7c7, name: Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz,
       secondaryFiles: [{class: File, path: 6063901d357c3a53540ca81b, name: Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz.tbi}]}}
@@ -63,25 +64,25 @@ steps:
     doc: 'Create recalibration model for snps using GATK VariantRecalibrator, tranch values, and known site VCFs'
     in:
       sentieon_license: sentieon_license
+      threads: varcal_threads
       reference: reference
       input_vcf: bcftools_concat/merged_vcf
       dbsnp_resource_vcf: dbsnp_vcf
       hapmap_resource_vcf: hapmap_resource_vcf
       omni_resource_vcf: omni_resource_vcf
       one_thousand_genomes_resource_vcf: one_thousand_genomes_resource_vcf
-      sites_only_variant_filtered_vcf: bcftools_concat/merged_vcf
       max_gaussians: snp_max_gaussians
     out: [recal, tranches]
   Sentieon_VarCal_INDELs:
     run: ../tools/sentieon_varcal_indels.cwl
     in:
       sentieon_license: sentieon_license
+      threads: varcal_threads
       reference: reference
       input_vcf: bcftools_concat/merged_vcf
       axiomPoly_resource_vcf: axiomPoly_resource_vcf
       dbsnp_resource_vcf: dbsnp_vcf
       mills_resource_vcf: mills_resource_vcf
-      sites_only_variant_filtered_vcf: bcftools_concat/merged_vcf
       max_gaussians: indel_max_gaussians
     out: [recal, tranches]
   Sentieon_ApplyVarCal:
