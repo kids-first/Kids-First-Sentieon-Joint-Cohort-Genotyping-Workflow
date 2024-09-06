@@ -1,6 +1,6 @@
 # Kids First-Sentieon Joint Cohort Calling
 
-This is a beta workflow. It is not currently used in production, but it's output is more than serviceable.
+This is a beta workflow. It is not currently used in production, but its output is more than serviceable.
 An efficient, fast, and cost effective workflow for joint calling cohorts up to ~4000 individuals on the CAVATICA platform.
 You will likely need to have installed [sbpack](https://pypi.org/project/sbpack/) to push the necessary apps into your project, and it is recommended to have the python packages listed in `python_pip_requirements.txt` installed.
 Both workflows have limited implementations of the [`GVCFtyper` algo](https://support.sentieon.com/manual/usages/general/#gvcftyper-algorithm) which is part of the [Sentieon driver library](https://support.sentieon.com/manual/usages/general/#driver-binary).
