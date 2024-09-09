@@ -1,9 +1,11 @@
 # Kids First-Sentieon Joint Cohort Calling
 
-This is a work in progress and under active development.
+This is a beta workflow. It is not currently used in production, but its output is more than serviceable.
 An efficient, fast, and cost effective workflow for joint calling cohorts up to ~4000 individuals on the CAVATICA platform.
 You will likely need to have installed [sbpack](https://pypi.org/project/sbpack/) to push the necessary apps into your project, and it is recommended to have the python packages listed in `python_pip_requirements.txt` installed.
 Both workflows have limited implementations of the [`GVCFtyper` algo](https://support.sentieon.com/manual/usages/general/#gvcftyper-algorithm) which is part of the [Sentieon driver library](https://support.sentieon.com/manual/usages/general/#driver-binary).
+Currently, VQSR is not part of this workfow, but is available to run after this one.
+Please see the [Kids First-Sentieon VQSR Equivalent Workflow](docs/KF_SENTIEON_VQSR.md) for more info on that.
 For any question/comments/support request, please email support@kidsfirstdrc.org
 <p align="center">
  <img src="https://github.com/d3b-center/d3b-research-workflows/raw/master/doc/kfdrc-logo-sm.png" alt="data service logo"/>
