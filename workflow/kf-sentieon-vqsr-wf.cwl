@@ -62,8 +62,10 @@ inputs:
   output_type: {type: ['null', {type: enum, name: output_type, symbols: ["b", "u", "v", "z"]}], default: "z", doc: "b: compressed
       BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]"}
   sentieon_license: {type: 'string?', doc: "License server host and port", default: "10.5.64.221:8990"}
-  varcal_threads: {type: 'int?', doc: "Number of threads to set for VarCal. MUST BE 1 IF YOU WANT IT TO BE DETERMINISTIC", default: 8}
-  varcal_ram: {type: 'int?', default: 16, doc: "RAM in GB to providew to VarCal jobs. May need to increase depending on size of input"}
+  snp_varcal_threads: {type: 'int?', doc: "Number of threads to set for VarCal. MUST BE 1 IF YOU WANT IT TO BE DETERMINISTIC", default: 8}
+  indel_varcal_threads: {type: 'int?', doc: "Number of threads to set for VarCal. MUST BE 1 IF YOU WANT IT TO BE DETERMINISTIC", default: 8}
+  snp_varcal_ram: {type: 'int?', default: 32, doc: "RAM in GB to providew to SNP VarCal job. May need to increase depending on size of input"}
+  indel_varcal_ram: {type: 'int?', default: 16, doc: "RAM in GB to providew to INDEL VarCal job. May need to increase depending on size of input"}
   srand: {type: 'int?', default: 42, doc: "Determines the seed to use in the random number generation. You can set RANDOM_SEED to
       0 and the software will use the random seed from your computer. In order to generate a deterministic result, you should use
       a non-zero RANDOM_SEED"}
@@ -122,8 +124,8 @@ steps:
     doc: 'Create recalibration model for snps using GATK VariantRecalibrator, tranch values, and known site VCFs'
     in:
       sentieon_license: sentieon_license
-      threads: varcal_threads
-      ram: varcal_ram
+      threads: snp_varcal_threads
+      ram: snp_varcal_ram
       reference: reference
       input_vcf: bcftools_concat/merged_vcf
       dbsnp_resource_vcf: dbsnp_vcf
@@ -139,8 +141,8 @@ steps:
     run: ../tools/sentieon_varcal_indels.cwl
     in:
       sentieon_license: sentieon_license
-      threads: varcal_threads
-      ram: varcal_ram
+      threads: indel_varcal_threads
+      ram: indel_varcal_ram
       reference: reference
       input_vcf: bcftools_concat/merged_vcf
       axiomPoly_resource_vcf: axiomPoly_resource_vcf
