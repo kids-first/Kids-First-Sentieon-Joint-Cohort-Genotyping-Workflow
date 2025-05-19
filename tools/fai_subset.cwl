@@ -17,7 +17,7 @@ arguments:
   - position: 1
     shellQuote: false
     valueFrom: >-
-      > subset_$(inputs.reference_fai.basename) && cut -f 1 subset_$(inputs.reference_fai.basename) | tee chr_list.txt | xargs -IN echo $(inputs.output_file_prefix)_N.vcf.gz > output_filename_list.txt
+      > subset_$(inputs.reference_fai.basename) && cut -f 1 subset_$(inputs.reference_fai.basename) | tee chr_list.txt | xargs -INCHR echo $(inputs.output_file_prefix)_NCHR.vcf.gz > output_filename_list.txt
 inputs:
   num_lines: { type: 'int?', doc: "Num lines from beginning to subset index on", default: 24, inputBinding: { position: 0, prefix: "-n"} }
   reference_fai: { type: File, doc: "Fasta reference index file to subset", inputBinding: {position: 0 } }

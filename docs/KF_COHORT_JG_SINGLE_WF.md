@@ -33,8 +33,8 @@ If 4TB is insufficient to process your cohort, contact CAVATICA support for assi
  - `bcftools_cpu`: Dictates the amount of stacking to perform for gVCF split steps. By default set to 4, so number of concurrent files per instance is the number of cores in the instance/bcftools_cpu
  - `gvcf_typer_cpus`: Number of cpus each Sentieon GVCFtyper job should attempt to use. Default for workflow is 48. Adjust this if you change the instance type in the Execution Settings at task setup
  - `gvcf_typer_mem`: Amount of RAM in GB each Sentieon GVCFtyper job should attempt to use. Default for workflow is 48, but in practice will likely be less than 30. Adjust this if you change the instance type in the Execution Settings at task setup
- - `call_conf`: Call confidence level (default: 30)
- - `emit_conf`: Emit confidence level (default: 30)
+ - `call_conf`: Call confidence level (default: 30), _set to 10 for coalescent mode_
+ - `emit_conf`: Emit confidence level (default: 30), _set to 10 for coalescent mode_
  - `genotype_model`: "coalescent" or  "multinomial", default: multinomial.
     While the coalescent mode is theoretically more accurate for smaller cohorts, the multinomial mode is equally accurate with large cohorts and scales better with a very large number of samples.
  - `output_file_prefix`: Since outputs will be joint calls split by chromosome, a user-defined convenience to prefix each file output with a string of their choice

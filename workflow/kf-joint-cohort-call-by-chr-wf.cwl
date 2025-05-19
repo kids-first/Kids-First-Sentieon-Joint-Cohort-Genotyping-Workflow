@@ -65,8 +65,8 @@ inputs:
   gvcf_typer_mem: {type: 'int?', doc: "Amount of ram to use per gvcf typer job (in GB)", default: 48}
   sentieon_license: {type: 'string?', doc: "License server host and port", default: "10.5.64.221:8990"}
   dbSNP: {type: 'File?', secondaryFiles: ['.tbi'], doc: "dbSNP file to annotate with"}
-  call_conf: {type: 'int?', doc: "Call confidence level (default: 30)", default: 30}
-  emit_conf: {type: 'int?', doc: "Emit confidence level (default: 30)", default: 30}
+  call_conf: {type: 'int?', doc: "Call confidence level (default: 30), set to 10 for coalescent mode", default: 30}
+  emit_conf: {type: 'int?', doc: "Emit confidence level (default: 30), set to 10 for coalescent mode", default: 30}
   genotype_model: {type: ['null', {name: genotype_model, type: enum, symbols: ["coalescent", "multinomial"]}], default: multinomial,
     doc: "While the coalescent mode is theoretically more accurate for smaller cohorts, the multinomial mode is equally accurate with
       large cohorts and scales better with a very large number of samples."}

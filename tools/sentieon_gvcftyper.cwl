@@ -15,7 +15,7 @@ requirements:
     coresMin: $(inputs.cpu_per_job)
     ramMin: $(inputs.mem_per_job * 1000)
   - class: DockerRequirement
-    dockerPull: pgc-images.sbgenomics.com/hdchen/sentieon:202308.02_cavatica
+    dockerPull: pgc-images.sbgenomics.com/hdchen/sentieon:202308.02_cavatica_patched
   - class: EnvVarRequirement
     envDef:
     - envName: SENTIEON_LICENSE
@@ -64,9 +64,9 @@ inputs:
     inputBinding: { position: 101, prefix: "-d" } }
   emit_mode: { type: ['null', {type: enum, name: emit_mode, symbols: ["variant", "confident", "all"]} ],  doc: "Emit mode: variant, confident or all (default: variant)",
     default: "variant", inputBinding: { position: 101, prefix: "--emit_mode" } }
-  call_conf: { type: 'int?', doc: "Call confidence level (default: 30)",
+  call_conf: { type: 'int?', doc: "Call confidence level (default: 30), set to 10 for coalescent mode",
     default: 30, inputBinding: { position: 101, prefix: "--call_conf" } }
-  emit_conf: { type: 'int?', doc: "Emit confidence level (default: 30)",
+  emit_conf: { type: 'int?', doc: "Emit confidence level (default: 30), set to 10 for coalescent mode",
     default: 30, inputBinding: { position: 101, prefix: "--emit_conf" } }
   genotype_model: { type: ['null', {type: enum, name: genotype_model, symbols: ["coalescent", "multinomial"]} ],  doc: "While the coalescent mode is theoretically more accuracy for smaller cohorts, the multinomial mode is equally accurate with large cohorts and scales better with a very large numbers of samples.",
     default: "multinomial", inputBinding: { position: 101, prefix: "--genotype_model" } }
